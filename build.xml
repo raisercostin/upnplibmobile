@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ======================================================================= -->
+<!-- Project build file for Ant -->
+<!-- -->
+<!-- AUTHOR: -=MaGGuS=- -->
+<!-- ======================================================================= -->
+
+<project name="upnplib-mobile" default="jar" basedir=".">
+	<description>Builds, packages, tests, and runs the project.
+	</description>
+
+	<property name="progname" value="${ant.project.name}" />
+	<property name="buildDir" value="./bin/" />
+	<property name="libDir" value="./lib/" />
+	<property name="srcDir" value="./src/" />
+	<property name="jarDir" value="./dist/" />
+	<property name="jarFile" value="${progname}.jar" />
+	<property name="vendor" value="-=MaGGuS=-" />
+	<property name="version" value="2.0.0" />
+
+	<path id="classes">
+		<fileset dir="${buildDir}">
+			<include name="**/*.class" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<tstamp />
+	</target>
+
+	<target name="build" depends="init" description="Build sources">
+		<echo message="Building ${progname}..." />
+		<mkdir dir="${buildDir}" />
+		<mkdir dir="${libDir}" />
+		<javac srcdir="${srcDir}" destdir="${buildDir}" debug="true"
+			debuglevel="lines,vars,source" target="1.6">
+			<include name="**/*.java" />
+			<classpath>
+				<fileset dir="${libDir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="build" description="Package into JAR">
+		<echo message="Packaging ${jarFile}..." />
+		<mkdir dir="${jarDir}" />
+		<delete file="${jarDir}/${jarFile}" />
+		<jar jarfile="${jarDir}/${jarFile}">
+			<fileset dir="${buildDir}">
+				<include name="**/*.class" />
+			</fileset>
+			<manifest>
+				<!-- attribute name="Built-By" value="${user.name}" / -->
+				<attribute name="Implementation-Vendor" value="${vendor}" />
+				<attribute name="Implementation-Title" value="${ant.project.name}" />
+				<attribute name="Implementation-Version" value="${version}" />
+			</manifest>
+		</jar>
+	</target>
+</project>
