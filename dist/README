@@ -1,3 +1,7 @@
+~~~RELEASE NOTES:~~~
+
+upnplib-mobile.jar - UPnPlib-mobile v.2.0.0 - Initial Android port of the original UPNPLib version 1.0.4
+
 ~~~DESCRIPTION:~~~
 
 UPnPlib-mobile - Java/Android library for port mapping on UPnP routers.
@@ -8,6 +12,69 @@ Unlike the original, UPNPLib-mobile intended to be used for Android software dev
 For more details about original UPNPLib library go here:
 https://freecode.com/projects/upnplib
 
-~~~RELEASE NOTES:~~~
+~~~USAGE EXAMPLE:~~~
 
-upnplib-mobile.jar - UPnPlib-mobile v.2.0.0 - Initial Android port of the original UPNPLib version 1.0.4
+	public final static void main(String args[])
+	{
+		int discoveryTiemout = 5000; // 5 secs
+		try
+		{
+			System.out.println("Looking for Internet Gateway Device...");
+			InternetGatewayDevice[] IGDs = InternetGatewayDevice.getDevices(discoveryTiemout);
+			if(IGDs != null)
+			{
+				for(int i = 0; i < IGDs.length; i++)
+				{
+					InternetGatewayDevice testIGD = IGDs[i];
+					System.out.println("\tFound device " + testIGD.getIGDRootDevice().getModelName());
+					System.out.println("External IP address: " + testIGD.getExternalIPAddress());
+					Integer natTableSize = testIGD.getNatTableSize();
+					System.out.println("NAT table size is " + natTableSize);
+					// list all port mappings
+					for(int j = 0; j < natTableSize; j++)
+					{
+						ActionResponse mapEntry = testIGD.getGenericPortMappingEntry(j);
+						System.out.println("" + (j + 1) + ".\t" + mapEntry);
+					}
+
+					// now let's open the port
+					int portNum = 9090;
+					System.out.println("\nTrying to map dummy port " + portNum + "...");
+					String localHostIP = InetAddress.getLocalHost().getHostAddress();
+					boolean mapped = testIGD.addPortMapping("Some mapping description", null, portNum, portNum, localHostIP, 0, "TCP");
+					if(mapped)
+					{
+						System.out.println("Port " + portNum + " mapped to " + localHostIP);
+						System.out.println("Current mappings count is " + testIGD.getNatMappingsCount());
+						// checking on the device
+						ActionResponse resp = testIGD.getSpecificPortMappingEntry(null, portNum, "TCP");
+						if(resp != null)
+						{
+							System.out.println("Port " + portNum + " mapping confirmation received from device");
+						}
+						
+						// and now close it
+						System.out.println("Delete dummy port mapping...");
+						boolean unmapped = testIGD.deletePortMapping(null, portNum, "TCP");
+						if(unmapped)
+						{
+							System.out.println("Port " + portNum + " unmapped");
+						}
+					}
+				}
+				System.out.println("\nDone.");
+			}
+			else
+			{
+				System.out.println("Unable to find IGD on your network");
+			}
+		}
+		catch(IOException ex)
+		{
+			System.err.println("IOException occured during discovery or ports mapping " + ex.getMessage());
+		}
+		catch(UPNPResponseException respEx)
+		{
+			System.err.println("UPNP device unhappy " + respEx.getDetailErrorCode() + " " + respEx.getDetailErrorDescription());
+		}
+	}
