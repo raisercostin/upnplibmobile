@@ -5,8 +5,11 @@ upnplib-mobile.jar - UPnPlib-mobile v.2.0.0 - Initial Android port of the origin
 ~~~DESCRIPTION:~~~
 
 UPnPlib-mobile - Java/Android library for port mapping on UPnP routers.
+This library allows to discover UPnP-compatible routers on the local network,
+get some basic router information, including model and version number, external and internal interfaces addresses,
+forwarded ports list. Library allows to add new and delete existing port mappings.
 
-UPNPLib-mobile is the port of the abandoned UPNPLib project developed by "sbbi". 
+UPnPlib-mobile is the port of the abandoned UPNPLib project developed by "sbbi". 
 Unlike the original, UPNPLib-mobile intended to be used for Android software development.
 
 For more details about original UPNPLib library go here:
